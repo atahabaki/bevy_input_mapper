@@ -143,13 +143,13 @@ fn input_action_listener(
             {
                 events.send(InputActionEvent(InputActionData::Pressable(
                     (*action.0).clone().into(),
-                    action.1.clone(),
+                    *action.1,
                 )));
             }
             if kbd.1 == ButtonState::Released && keyboard_input.just_released(kbd.0) {
                 events.send(InputActionEvent(InputActionData::Pressable(
                     (*action.0).clone().into(),
-                    action.1.clone(),
+                    *action.1,
                 )));
             }
         }
@@ -158,7 +158,7 @@ fn input_action_listener(
             for ev in mouse_motion.iter() {
                 events.send(InputActionEvent(InputActionData::Swipable(
                     (*action.0).clone().into(),
-                    action.1.clone(),
+                    *action.1,
                     if axis == Axis2DType::X {
                         ev.delta.x
                     } else {
