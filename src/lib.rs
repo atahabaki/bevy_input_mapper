@@ -3,6 +3,31 @@ use bevy::{
     prelude::*,
     utils::HashMap,
 };
+/// Any input that can be represented as clickable/pressable.
+/// Such as buttons.
+pub trait Press {}
+impl Press for MouseButton {}
+impl Press for KeyCode {}
+impl Press for GamepadButtonType {}
+/// Any input change that can be represented in 2D Axis system.
+/// Examples: mouse movements, and gamepad's left and right stick movements.
+pub trait Move2D {}
+impl Move2D for Axis2DType {}
+impl Move2D for GamepadAxisType {}
+/// Use for Mapping and Input Scanning.
+/// Represents pressable inputs with ButtonState.
+#[derive(Debug, Clone, Copy)]
+pub struct Pressable<T: Press> {
+    pub button: T,
+    pub state: ButtonState
+}
+/// Used for Mapping and Input Scanning.
+/// Represents movable inputs such as analog sticks and mouses with prefered axis.
+#[derive(Debug, Clone, Copy)]
+pub struct Movable<T: Move2D> {
+    pub prefered_axis: T
+}
+/// Used to lock the axis to the desired.
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Axis2DType {
     X,
@@ -14,36 +39,6 @@ pub enum InputActionData {
     Swipable(String, InputAction, f32),
     Pressable(String, InputAction),
 }
-/// Mapping configuration for Keyboard Button/Key.
-///
-/// - Uses [KeyCode] to match the Keyboard Button.
-/// - Uses [ButtonState] to match the desired button state.
-#[derive(Debug, Clone, Copy)]
-pub struct KeyboardButtonActionConfig(pub KeyCode, pub ButtonState);
-/// Mapping configuration for Mouse Button
-///
-/// - [MouseButton] to mapped to the Action
-/// - [ButtonState] to mapped to the Action
-#[derive(Debug, Clone, Copy)]
-pub struct MouseButtonActionConfig(pub MouseButton, pub ButtonState);
-/// Mapping configuration for the Mouse movement in X,Y coordinates.
-///
-/// [Axis2D] is used to lock to the X or Y pos.
-#[derive(Debug, Clone, Copy)]
-pub struct MouseMoveActionConfig(pub Axis2DType);
-/// Mapping configuration for the Gamepad buttons.
-///
-/// - [GamepadButtonType] is used to determine which button should be used.
-/// (i.e. Triangle, X, Y, DPAD_UP, etc.)
-/// - [ButtonState] is used to match the button is pressed/released.
-#[derive(Debug, Clone, Copy)]
-pub struct GamepadButtonActionConfig(pub GamepadButtonType, pub ButtonState);
-/// Mapping configuration for the Gamepad axises.
-///
-/// - [GamepadAxisType] is used to match the desired Axis.
-#[derive(Debug, Clone, Copy)]
-pub struct GamepadStickMoveActionConfig(pub GamepadAxisType);
-
 /// Action is anything that can be achieved by any user input.
 /// For example looking up/down/right/left, walking up/down/righ/left,
 /// jumping, anything.
@@ -57,25 +52,25 @@ pub struct GamepadStickMoveActionConfig(pub GamepadAxisType);
 #[derive(Debug, Default, Clone, Copy, Component)]
 pub struct InputAction {
     /// Used to bind to a Keyboard Button.
-    pub keyboard_button: Option<KeyboardButtonActionConfig>,
+    pub keyboard_button: Option<Pressable<KeyCode>>,
     /// Used to bind to a Mouse Button.
-    pub mouse_button: Option<MouseButtonActionConfig>,
+    pub mouse_button: Option<Pressable<MouseButton>>,
     /// Used to bind to a Mouse Move.
-    pub mouse_axis: Option<MouseMoveActionConfig>,
+    pub mouse_axis: Option<Movable<Axis2DType>>,
     /// Used to bind to a Gamepad Button.
-    pub gamepad_button: Option<GamepadButtonActionConfig>,
+    pub gamepad_button: Option<Pressable<GamepadButtonType>>,
     /// Used to bind to a Gamepad axis.
-    pub gamepad_axis: Option<GamepadStickMoveActionConfig>,
+    pub gamepad_axis: Option<Movable<GamepadAxisType>>,
 }
 
 impl InputAction {
     /// Returns [InputAction] if at least one Mapping exist.
     pub fn new(
-        keyboard_button: Option<KeyboardButtonActionConfig>,
-        mouse_button: Option<MouseButtonActionConfig>,
-        mouse_axis: Option<MouseMoveActionConfig>,
-        gamepad_button: Option<GamepadButtonActionConfig>,
-        gamepad_axis: Option<GamepadStickMoveActionConfig>,
+        keyboard_button: Option<Pressable<KeyCode>>,
+        mouse_button: Option<Pressable<MouseButton>>,
+        mouse_axis: Option<Movable<Axis2DType>>,
+        gamepad_button: Option<Pressable<GamepadButtonType>>,
+        gamepad_axis: Option<Movable<GamepadAxisType>>,
     ) -> Option<Self> {
         if keyboard_button.is_some()
             || gamepad_button.is_some()
@@ -138,15 +133,15 @@ fn input_action_listener(
     for action in configured_input_actions.0.iter() {
         if action.1.has_keyboard_button() {
             let kbd = action.1.keyboard_button.unwrap();
-            if kbd.1 == ButtonState::Pressed && keyboard_input.just_pressed(kbd.0)
-                || keyboard_input.pressed(kbd.0)
+            if kbd.state == ButtonState::Pressed && keyboard_input.just_pressed(kbd.button)
+                || keyboard_input.pressed(kbd.button)
             {
                 events.send(InputActionEvent(InputActionData::Pressable(
                     (*action.0).clone().into(),
                     *action.1,
                 )));
             }
-            if kbd.1 == ButtonState::Released && keyboard_input.just_released(kbd.0) {
+            if kbd.state == ButtonState::Released && keyboard_input.just_released(kbd.button) {
                 events.send(InputActionEvent(InputActionData::Pressable(
                     (*action.0).clone().into(),
                     *action.1,
@@ -154,7 +149,7 @@ fn input_action_listener(
             }
         }
         if action.1.has_mouse_axis() {
-            let axis = action.1.mouse_axis.unwrap().0;
+            let axis = action.1.mouse_axis.unwrap().prefered_axis;
             for ev in mouse_motion.iter() {
                 events.send(InputActionEvent(InputActionData::Swipable(
                     (*action.0).clone().into(),
