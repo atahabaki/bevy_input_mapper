@@ -3,10 +3,15 @@ use bevy::{
     prelude::*,
     utils::HashMap,
 };
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum Axis2DType {
+    X,
+    Y,
+}
 /// Currently supported input types are pressable and swipable.
 #[derive(Debug)]
 pub enum InputActionData {
-    Swipable(String, InputAction, Vec2),
+    Swipable(String, InputAction, f32),
     Pressable(String, InputAction),
 }
 /// Mapping configuration for Keyboard Button/Key.
@@ -23,10 +28,9 @@ pub struct KeyboardButtonActionConfig(pub KeyCode, pub ButtonState);
 pub struct MouseButtonActionConfig(pub MouseButton, pub ButtonState);
 /// Mapping configuration for the Mouse movement in X,Y coordinates.
 ///
-/// [Vec2] is used but, you should use just `Vec2::X` or `Vec2::Y`
-/// This will be changed in later versions.
+/// [Axis2D] is used to lock to the X or Y pos.
 #[derive(Debug, Clone, Copy)]
-pub struct MouseMoveActionConfig(pub Vec2);
+pub struct MouseMoveActionConfig(pub Axis2DType);
 /// Mapping configuration for the Gamepad buttons.
 ///
 /// - [GamepadButtonType] is used to determine which button should be used.
@@ -150,11 +154,16 @@ fn input_action_listener(
             }
         }
         if action.1.has_mouse_axis() {
+            let axis = action.1.mouse_axis.unwrap().0;
             for ev in mouse_motion.iter() {
                 events.send(InputActionEvent(InputActionData::Swipable(
                     (*action.0).clone().into(),
                     action.1.clone(),
-                    ev.delta,
+                    if axis == Axis2DType::X {
+                        ev.delta.x
+                    } else {
+                        ev.delta.y
+                    },
                 )))
             }
         }
