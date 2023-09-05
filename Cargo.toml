@@ -3,5 +3,9 @@ name = "bevy_input_mapper"
 version = "0.0.1"
 edition = "2021"
 
+[features]
+# This is experimental.
+bind_macro = []
+
 [dependencies]
 bevy = "0.11.2"

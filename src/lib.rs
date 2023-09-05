@@ -19,13 +19,13 @@ impl Move2D for GamepadAxisType {}
 #[derive(Debug, Clone, Copy)]
 pub struct Pressable<T: Press> {
     pub button: T,
-    pub state: ButtonState
+    pub state: ButtonState,
 }
 /// Used for Mapping and Input Scanning.
 /// Represents movable inputs such as analog sticks and mouses with prefered axis.
 #[derive(Debug, Clone, Copy)]
 pub struct Movable<T: Move2D> {
-    pub prefered_axis: T
+    pub prefered_axis: T,
 }
 /// Used to lock the axis to the desired.
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -169,5 +169,54 @@ impl Plugin for InputActionPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<InputActionEvent>()
             .add_systems(Update, input_action_listener);
+    }
+
+    fn ready(&self, _app: &App) -> bool {
+        true
+    }
+
+    fn finish(&self, _app: &mut App) {
+        // do nothing
+    }
+
+    fn cleanup(&self, _app: &mut App) {
+        // do nothing
+    }
+
+    fn name(&self) -> &str {
+        std::any::type_name::<Self>()
+    }
+
+    fn is_unique(&self) -> bool {
+        true
+    }
+}
+
+/// Used to insert binding/mapping to [ConfiguredInputActions].
+/// This will perhaps change
+#[cfg(feature = "bind_macro")]
+#[macro_export]
+macro_rules! bind {
+    ($action_map:ident, $action_name:expr,
+        $(
+            ($button:expr, $state:expr)
+        ),+
+    ) => {
+        {
+            let mut input_action = InputAction::default();
+            $(
+                // TODO: Get button type. Insert to appropriate slot.
+            )+
+            $action_map.entry($action_name).or_insert(input_action);
+        }
+    };
+    ($action_map:ident, $action_name:expr, $($axis:expr),+) => {
+            {
+                let mut input_action = InputAction::default();
+                $(
+                    // TODO: Get Axis type. Insert to appropriate slot.
+                )+
+                $action_map.entry($action_name).or_insert(input_action);
+            }
     }
 }
