@@ -12,8 +12,8 @@ impl Press for GamepadButtonType {}
 /// Any input change that can be represented in 2D Axis system.
 /// Examples: mouse movements, and gamepad's left and right stick movements.
 pub trait Move2D {}
-impl Move2D for Axis2DType {}
-impl Move2D for GamepadAxisType {}
+impl Move2D for Axis2D {}
+impl Move2D for GamepadAxis {}
 /// Use for Mapping and Input Scanning.
 /// Represents pressable inputs with ButtonState.
 #[derive(Debug, Clone, Copy)]
@@ -29,9 +29,23 @@ pub struct Movable<T: Move2D> {
 }
 /// Used to lock the axis to the desired.
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Axis2DType {
-    X,
-    Y,
+pub enum Axis2D {
+    PositiveX,
+    NegativeX,
+    PositiveY,
+    NegativeY
+}
+/// Represents Gamepad's Axis
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum GamepadAxis {
+    PositiveLeftStickX,
+    NegativeLeftStickX,
+    PositiveLeftStickY,
+    NegativeLeftStickY,
+    PositiveRightStickX,
+    NegativeRightStickX,
+    PositiveRightStickY,
+    NegativeRightStickY,
 }
 /// Currently supported input types are pressable and swipable.
 #[derive(Debug)]
@@ -56,11 +70,11 @@ pub struct InputAction {
     /// Used to bind to a Mouse Button.
     pub mouse_button: Option<Pressable<MouseButton>>,
     /// Used to bind to a Mouse Move.
-    pub mouse_axis: Option<Movable<Axis2DType>>,
+    pub mouse_axis: Option<Movable<Axis2D>>,
     /// Used to bind to a Gamepad Button.
     pub gamepad_button: Option<Pressable<GamepadButtonType>>,
     /// Used to bind to a Gamepad axis.
-    pub gamepad_axis: Option<Movable<GamepadAxisType>>,
+    pub gamepad_axis: Option<Movable<GamepadAxis>>,
 }
 
 impl InputAction {
@@ -68,9 +82,9 @@ impl InputAction {
     pub fn new(
         keyboard_button: Option<Pressable<KeyCode>>,
         mouse_button: Option<Pressable<MouseButton>>,
-        mouse_axis: Option<Movable<Axis2DType>>,
+        mouse_axis: Option<Movable<Axis2D>>,
         gamepad_button: Option<Pressable<GamepadButtonType>>,
-        gamepad_axis: Option<Movable<GamepadAxisType>>,
+        gamepad_axis: Option<Movable<GamepadAxis>>,
     ) -> Option<Self> {
         if keyboard_button.is_some()
             || gamepad_button.is_some()
@@ -154,7 +168,7 @@ fn input_action_listener(
                 events.send(InputActionEvent(InputActionData::Swipable(
                     (*action.0).clone().into(),
                     *action.1,
-                    if axis == Axis2DType::X {
+                    if axis == Axis2D::X {
                         ev.delta.x
                     } else {
                         ev.delta.y
