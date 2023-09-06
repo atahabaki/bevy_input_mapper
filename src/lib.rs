@@ -53,6 +53,6 @@ impl Plugin for InputMapperPlugin {
             .add_event::<InputActionFinished>()
             .add_systems(Update, InputMapper::event_cycle)
             .add_systems(Update, InputMapper::keyboard_key_press_system)
-            .add_systems(Update, InputMapper::mouse_button_press_system);
+            .add_systems(Update,(InputMapper::mouse_button_press_system, InputMapper::mouse_axis_move_system));
     }
 }
