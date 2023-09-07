@@ -33,43 +33,49 @@ impl Default for MouseAxis {
 
 impl InputMapper {
     pub fn mouse_axis_move_system(mut im: ResMut<InputMapper>, mut mouse_motion: EventReader<MouseMotion>) {
-        let min_vec = -1. * Vec2::ONE;
-        let max_vec = 1. * Vec2::ONE;
-        let clamp_vec2 = |vector: Vec2| -> Vec2 {
-            let clamp = |min: f32, max: f32, v: f32| -> f32 {
-                if v < min {
-                    min
-                } else if v > max {
-                    max
-                } else {
-                    v
-                }
-            };
-            Vec2::new(clamp(min_vec.x, max_vec.x, vector.x), clamp(min_vec.y, max_vec.y, vector.y))
+        let axis_binding = im.mouse_axis_binding.clone();
+        let clear_x = |im: &mut ResMut<InputMapper>| {
+            if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
+                im.action_value.bind((*action).clone(), 0.);
+            }
+            if let Some(action) = axis_binding.get(&MouseAxis::NegativeX) {
+                im.action_value.bind((*action).clone(), 0.);
+            }
+        };
+        let clear_y = |im: &mut ResMut<InputMapper>| {
+            if let Some(action) = axis_binding.get(&MouseAxis::PositiveY) {
+                im.action_value.bind((*action).clone(), 0.);
+            }
+            if let Some(action) = axis_binding.get(&MouseAxis::NegativeY) {
+                im.action_value.bind((*action).clone(), 0.);
+            }
+        };
+        let clear = |im: &mut ResMut<InputMapper>| {
+            clear_x(im);
+            clear_y(im);
         };
         if let Some(motion) = mouse_motion.iter().last() {
-            let normalized_delta = clamp_vec2(motion.delta);
-            let axis_binding = im.mouse_axis_binding.clone();
-            if normalized_delta.x > 0. {
-                if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
-                    im.action_value.bind((*action).clone(), normalized_delta.x);
+            // NOTE: Did `ö` got your attention? Be unusual when it comes to naming variables...
+            match motion.delta.x {
+                ö if ö > 0. => if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
+                    im.action_value.bind((*action).clone(), motion.delta.x);
                 }
-            }
-            if normalized_delta.x < 0. {
-                if let Some(action) = axis_binding.get(&MouseAxis::NegativeX) {
-                    im.action_value.bind((*action).clone(), normalized_delta.x.abs());
+                ö if ö < 0. => if let Some(action) = axis_binding.get(&MouseAxis::NegativeX) {
+                    im.action_value.bind((*action).clone(), motion.delta.x.abs());
                 }
+                _  => clear_x(&mut im),
             }
-            if normalized_delta.y > 0. {
-                if let Some(action) = axis_binding.get(&MouseAxis::PositiveY) {
-                    im.action_value.bind((*action).clone(), normalized_delta.y);
+            match motion.delta.y {
+                ö if ö > 0. => if let Some(action) = axis_binding.get(&MouseAxis::PositiveY) {
+                    im.action_value.bind((*action).clone(), motion.delta.y);
                 }
-            }
-            if normalized_delta.y < 0. {
-                if let Some(action) = axis_binding.get(&MouseAxis::NegativeY) {
-                    im.action_value.bind((*action).clone(), normalized_delta.y.abs());
+                ö if ö < 0. => if let Some(action) = axis_binding.get(&MouseAxis::NegativeY) {
+                    im.action_value.bind((*action).clone(), motion.delta.y.abs());
                 }
+                _  => clear_y(&mut im),
             }
+        } else {
+            clear(&mut im);
         }
     }
 
