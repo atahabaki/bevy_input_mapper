@@ -2,6 +2,11 @@
 name = "bevy_input_mapper"
 version = "0.0.1"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/atahabaki/bevy_input_mapper"
+description = "Input binding has never been easier: a Bevy game engine plugin designed with stunning simplicity in mind."
+keywords = ["bevy", "plugin", "binding", "inputmap"]
+categories = ["game-development"]
 
 [features]
 # This is experimental.
