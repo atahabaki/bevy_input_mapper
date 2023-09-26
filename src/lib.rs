@@ -3,7 +3,7 @@ pub mod input;
 use std::hash::Hash;
 
 use bevy::{prelude::*, utils::HashMap};
-use input::{mouse::MouseAxis, events::{InputActionStarted, InputActionContinuing, InputActionFinished}};
+use input::{mouse::MouseAxis, gamepad::GamepadAxis, events::{InputActionStarted, InputActionContinuing, InputActionFinished}};
 
 use crate::input::events::InputActionActive;
 
@@ -38,6 +38,8 @@ pub struct InputMapper {
     pub keyboard_binding: HashMap<KeyCode, String>,
     pub mouse_button_binding: HashMap<MouseButton, String>,
     pub mouse_axis_binding: HashMap<MouseAxis, String>,
+
+    pub gamepad_axis_binding: HashMap<GamepadAxis, String>
 }
 
 #[derive(Default)]
@@ -53,6 +55,7 @@ impl Plugin for InputMapperPlugin {
             .add_event::<InputActionFinished>()
             .add_systems(Update, InputMapper::event_cycle)
             .add_systems(Update, InputMapper::keyboard_key_press_system)
-            .add_systems(Update,(InputMapper::mouse_button_press_system, InputMapper::mouse_axis_move_system));
+            .add_systems(Update,(InputMapper::mouse_button_press_system, InputMapper::mouse_axis_move_system))
+            .add_systems(Update, InputMapper::gamepad_axis_move_system);
     }
 }
