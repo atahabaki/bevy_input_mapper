@@ -24,6 +24,12 @@ fn bind_keys(mut im: ResMut<InputMapper>) {
         .bind(GamepadAxis::PositiveRightStickX, "look_right".to_string());
     im.gamepad_axis_binding
         .bind(GamepadAxis::NegativeRightStickX, "look_left".to_string());
+    im.gamepad_button_binding
+        .bind(GamepadButtonType::LeftTrigger, "scope".to_string());
+    im.gamepad_button_binding
+        .bind(GamepadButtonType::RightTrigger2, "fire".to_string());
+    im.gamepad_button_binding
+        .bind(GamepadButtonType::South, "jump".to_string());
 }
 
 fn logger(
