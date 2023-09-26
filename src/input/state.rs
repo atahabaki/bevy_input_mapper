@@ -4,15 +4,13 @@ impl InputMapper {
     pub fn get_previous_value(&self, action: &str) -> f32 {
         self.previous_action_value
             .get(&action.to_owned())
-            .or(Some(&0.))
-            .unwrap()
+            .unwrap_or(&0.)
             .clone()
     }
     pub fn get_current_value(&self, action: &str) -> f32 {
         self.action_value
             .get(&action.to_owned())
-            .or(Some(&0.))
-            .unwrap()
+            .unwrap_or(&0.)
             .clone()
     }
     pub fn is_started(&self, action: &str) -> bool {
