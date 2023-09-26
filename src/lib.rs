@@ -44,6 +44,7 @@ pub struct InputMapper {
     pub mouse_axis_binding: HashMap<MouseAxis, String>,
 
     pub gamepad_axis_binding: HashMap<GamepadAxis, String>,
+    pub gamepad_button_binding: HashMap<GamepadButton, String>,
 }
 
 #[derive(Default)]
@@ -65,6 +66,12 @@ impl Plugin for InputMapperPlugin {
                     InputMapper::mouse_axis_move_system,
                 ),
             )
-            .add_systems(Update, InputMapper::gamepad_axis_move_system);
+            .add_systems(
+                Update,
+                (
+                    InputMapper::gamepad_button_press_system,
+                    InputMapper::gamepad_axis_move_system,
+                ),
+            );
     }
 }
