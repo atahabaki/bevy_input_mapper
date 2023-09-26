@@ -1,15 +1,29 @@
 use bevy::prelude::*;
-use bevy_input_mapper::{InputMapperPlugin, InputMapper, AutoBinder, input::{events::*, mouse::MouseAxis}};
+use bevy_input_mapper::{
+    input::{events::*, gamepad::GamepadAxis, mouse::MouseAxis},
+    AutoBinder, InputMapper, InputMapperPlugin,
+};
 
-fn bind_keys(
-    mut im: ResMut<InputMapper>
-) {
+fn bind_keys(mut im: ResMut<InputMapper>) {
     im.keyboard_binding.bind(KeyCode::Space, "jump".to_string());
-    im.mouse_button_binding.bind(MouseButton::Left, "fire".to_string());
-    im.mouse_axis_binding.bind(MouseAxis::PositiveX, "look_right".to_string());
-    im.mouse_axis_binding.bind(MouseAxis::NegativeY, "look_up".to_string());
-    im.mouse_axis_binding.bind(MouseAxis::NegativeX, "look_left".to_string());
-    im.mouse_axis_binding.bind(MouseAxis::PositiveY, "look_down".to_string());
+    im.mouse_button_binding
+        .bind(MouseButton::Left, "fire".to_string());
+    im.mouse_axis_binding
+        .bind(MouseAxis::PositiveX, "look_right".to_string());
+    im.mouse_axis_binding
+        .bind(MouseAxis::NegativeY, "look_up".to_string());
+    im.mouse_axis_binding
+        .bind(MouseAxis::NegativeX, "look_left".to_string());
+    im.mouse_axis_binding
+        .bind(MouseAxis::PositiveY, "look_down".to_string());
+    im.gamepad_axis_binding
+        .bind(GamepadAxis::PositiveRightStickY, "look_up".to_string());
+    im.gamepad_axis_binding
+        .bind(GamepadAxis::NegativeRightStickY, "look_down".to_string());
+    im.gamepad_axis_binding
+        .bind(GamepadAxis::PositiveRightStickX, "look_right".to_string());
+    im.gamepad_axis_binding
+        .bind(GamepadAxis::NegativeRightStickX, "look_left".to_string());
 }
 
 fn logger(
