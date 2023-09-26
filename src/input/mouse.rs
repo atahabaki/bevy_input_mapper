@@ -1,6 +1,6 @@
-use bevy::{prelude::*, input::mouse::MouseMotion};
+use bevy::{input::mouse::MouseMotion, prelude::*};
 
-use crate::{InputMapper, AutoBinder};
+use crate::{AutoBinder, InputMapper};
 
 /// Represents a mouse's 2D movement axes.
 /// Horizontal axis is X, Vertical axis is Y.
@@ -32,7 +32,10 @@ impl Default for MouseAxis {
 }
 
 impl InputMapper {
-    pub fn mouse_axis_move_system(mut im: ResMut<InputMapper>, mut mouse_motion: EventReader<MouseMotion>) {
+    pub fn mouse_axis_move_system(
+        mut im: ResMut<InputMapper>,
+        mut mouse_motion: EventReader<MouseMotion>,
+    ) {
         let axis_binding = im.mouse_axis_binding.clone();
         let clear_x = |im: &mut ResMut<InputMapper>| {
             if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
@@ -57,22 +60,32 @@ impl InputMapper {
         if let Some(motion) = mouse_motion.iter().last() {
             // NOTE: Did `ö` got your attention? Be unusual when it comes to naming variables...
             match motion.delta.x {
-                ö if ö > 0. => if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
-                    im.action_value.bind((*action).clone(), motion.delta.x);
+                ö if ö > 0. => {
+                    if let Some(action) = axis_binding.get(&MouseAxis::PositiveX) {
+                        im.action_value.bind((*action).clone(), motion.delta.x);
+                    }
                 }
-                ö if ö < 0. => if let Some(action) = axis_binding.get(&MouseAxis::NegativeX) {
-                    im.action_value.bind((*action).clone(), motion.delta.x.abs());
+                ö if ö < 0. => {
+                    if let Some(action) = axis_binding.get(&MouseAxis::NegativeX) {
+                        im.action_value
+                            .bind((*action).clone(), motion.delta.x.abs());
+                    }
                 }
-                _  => clear_x(&mut im),
+                _ => clear_x(&mut im),
             }
             match motion.delta.y {
-                ö if ö > 0. => if let Some(action) = axis_binding.get(&MouseAxis::PositiveY) {
-                    im.action_value.bind((*action).clone(), motion.delta.y);
+                ö if ö > 0. => {
+                    if let Some(action) = axis_binding.get(&MouseAxis::PositiveY) {
+                        im.action_value.bind((*action).clone(), motion.delta.y);
+                    }
                 }
-                ö if ö < 0. => if let Some(action) = axis_binding.get(&MouseAxis::NegativeY) {
-                    im.action_value.bind((*action).clone(), motion.delta.y.abs());
+                ö if ö < 0. => {
+                    if let Some(action) = axis_binding.get(&MouseAxis::NegativeY) {
+                        im.action_value
+                            .bind((*action).clone(), motion.delta.y.abs());
+                    }
                 }
-                _  => clear_y(&mut im),
+                _ => clear_y(&mut im),
             }
         } else {
             clear(&mut im);

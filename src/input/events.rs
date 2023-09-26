@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{InputMapper, AutoBinder};
+use crate::{AutoBinder, InputMapper};
 
 #[derive(Event)]
 pub struct InputActionActive(pub String, pub f32);

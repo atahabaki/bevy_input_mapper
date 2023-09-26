@@ -3,7 +3,11 @@ pub mod input;
 use std::hash::Hash;
 
 use bevy::{prelude::*, utils::HashMap};
-use input::{mouse::MouseAxis, gamepad::GamepadAxis, events::{InputActionStarted, InputActionContinuing, InputActionFinished}};
+use input::{
+    events::{InputActionContinuing, InputActionFinished, InputActionStarted},
+    gamepad::GamepadAxis,
+    mouse::MouseAxis,
+};
 
 use crate::input::events::InputActionActive;
 
@@ -39,7 +43,7 @@ pub struct InputMapper {
     pub mouse_button_binding: HashMap<MouseButton, String>,
     pub mouse_axis_binding: HashMap<MouseAxis, String>,
 
-    pub gamepad_axis_binding: HashMap<GamepadAxis, String>
+    pub gamepad_axis_binding: HashMap<GamepadAxis, String>,
 }
 
 #[derive(Default)]
@@ -47,15 +51,20 @@ pub struct InputMapperPlugin;
 
 impl Plugin for InputMapperPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(InputMapper::default())
+        app.insert_resource(InputMapper::default())
             .add_event::<InputActionActive>()
             .add_event::<InputActionStarted>()
             .add_event::<InputActionContinuing>()
             .add_event::<InputActionFinished>()
             .add_systems(Update, InputMapper::event_cycle)
             .add_systems(Update, InputMapper::keyboard_key_press_system)
-            .add_systems(Update,(InputMapper::mouse_button_press_system, InputMapper::mouse_axis_move_system))
+            .add_systems(
+                Update,
+                (
+                    InputMapper::mouse_button_press_system,
+                    InputMapper::mouse_axis_move_system,
+                ),
+            )
             .add_systems(Update, InputMapper::gamepad_axis_move_system);
     }
 }
