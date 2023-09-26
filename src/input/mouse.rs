@@ -11,9 +11,10 @@ use crate::{AutoBinder, InputMapper};
 /// - Moving mouse to left is NegativeX,
 /// - Moving mouse to down is PositiveY,
 /// - Moving mouse to up is NegativeY,
-#[derive(Clone, Eq, PartialEq, Hash)]
+#[derive(Default, Clone, Eq, PartialEq, Hash)]
 pub enum MouseAxis {
     /// Horizontal positive movement.
+    #[default]
     PositiveX,
     /// Horizontal negative movement.
     NegativeX,
@@ -23,12 +24,6 @@ pub enum MouseAxis {
     /// Reversed Vertical negative movement.
     /// Imagine, moving your mouse bottom right corner to top right corner.
     NegativeY,
-}
-
-impl Default for MouseAxis {
-    fn default() -> Self {
-        MouseAxis::PositiveX
-    }
 }
 
 impl InputMapper {
