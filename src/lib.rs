@@ -44,7 +44,7 @@ pub struct InputMapper {
     pub mouse_axis_binding: HashMap<MouseAxis, String>,
 
     pub gamepad_axis_binding: HashMap<GamepadAxis, String>,
-    pub gamepad_button_binding: HashMap<GamepadButton, String>,
+    pub gamepad_button_binding: HashMap<GamepadButtonType, String>,
 }
 
 #[derive(Default)]
