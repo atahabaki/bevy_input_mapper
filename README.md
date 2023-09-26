@@ -16,8 +16,8 @@ Simplify Bevy game development with the user-friendly Bevy Input Mapper Plugin.
 
 - [x] Input Mapping
 - [ ] Load bindings from files
-- [ ] Supported Input Devices:
-  - [ ] Gamepad
+- [x] Supported Input Devices:
+  - [x] Gamepad
   - [x] Keyboard
   - [x] Mouse
     - [x] Mouse Movement
