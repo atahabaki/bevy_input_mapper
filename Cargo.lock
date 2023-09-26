@@ -596,7 +596,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_input_mapper"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "bevy",
 ]
