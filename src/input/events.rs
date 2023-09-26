@@ -34,10 +34,8 @@ impl InputMapper {
                 action_finished.send(InputActionFinished(action.to_owned()));
             }
         }
-        im.previous_action_value.clear();
         for (action, value) in curr.iter() {
             im.previous_action_value.bind(action.to_owned(), *value);
         }
-        im.action_value.clear();
     }
 }
