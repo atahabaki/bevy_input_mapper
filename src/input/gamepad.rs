@@ -1,4 +1,4 @@
-use bevy::{input::gamepad::GamepadAxisChangedEvent, prelude::*};
+use bevy::{input::gamepad::{GamepadAxisChangedEvent, GamepadButtonChangedEvent}, prelude::*};
 
 use crate::{AutoBinder, InputMapper};
 
@@ -32,6 +32,18 @@ pub enum GamepadAxis {
 }
 
 impl InputMapper {
+    pub fn gamepad_button_press_system(
+        mut im: ResMut<InputMapper>,
+        mut event: EventReader<GamepadButtonChangedEvent>
+    ) {
+        let binding = im.gamepad_button_binding.clone();
+        for button_press in event.iter() {
+            if let Some(action) = binding.get(&button_press.button_type) {
+                im.action_value.bind((*action).clone(), button_press.value);
+            }
+        }
+    }
+
     pub fn gamepad_axis_move_system(
         mut im: ResMut<InputMapper>,
         mut analog_motion: EventReader<GamepadAxisChangedEvent>,
