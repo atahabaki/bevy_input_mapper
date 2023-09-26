@@ -21,16 +21,16 @@ impl InputMapper {
     ) {
         let curr = im.action_value.clone();
         for (action, value) in curr.iter() {
-            if im.is_active(&action) {
+            if im.is_active(action) {
                 action_active.send(InputActionActive(action.to_owned(), *value));
             }
-            if im.is_started(&action) {
+            if im.is_started(action) {
                 action_started.send(InputActionStarted(action.to_owned(), *value));
             }
-            if im.is_continuing(&action) {
+            if im.is_continuing(action) {
                 action_continuing.send(InputActionContinuing(action.to_owned(), *value));
             }
-            if im.is_finished(&action) {
+            if im.is_finished(action) {
                 action_finished.send(InputActionFinished(action.to_owned()));
             }
         }
