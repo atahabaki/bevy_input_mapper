@@ -55,34 +55,27 @@ impl InputMapper {
         mut analog_motion: EventReader<GamepadAxisChangedEvent>,
     ) {
         let axis_binding = im.gamepad_axis_binding.clone();
-        let clear = |im: &mut ResMut<InputMapper>, axis: (&GamepadAxis, &GamepadAxis)| {
-            if let Some(action) = axis_binding.get(axis.0) {
-                im.action_value.bind((*action).clone(), 0.);
-            }
-            if let Some(action) = axis_binding.get(axis.1) {
-                im.action_value.bind((*action).clone(), 0.);
-            }
-        };
+        let set_val =
+            |im: &mut ResMut<InputMapper>, axis: (&GamepadAxis, &GamepadAxis), val: (f32, f32)| {
+                if let Some(action) = axis_binding.get(axis.0) {
+                    im.action_value.bind((*action).clone(), val.0);
+                }
+                if let Some(action) = axis_binding.get(axis.1) {
+                    im.action_value.bind((*action).clone(), val.1);
+                }
+            };
         let s_bind =
             |im: &mut ResMut<InputMapper>, ref_val: f32, axis: (&GamepadAxis, &GamepadAxis)| {
                 match ref_val {
-                    ö if ö > 0. => {
-                        if let Some(action) = axis_binding.get(axis.0) {
-                            im.action_value.bind(action.clone(), ref_val);
-                        }
-                        if let Some(action) = axis_binding.get(axis.1) {
-                            im.action_value.bind(action.clone(), 0.);
-                        }
-                    }
-                    ö if ö > 0. => {
-                        if let Some(action) = axis_binding.get(axis.1) {
-                            im.action_value.bind(action.clone(), ref_val.abs());
-                        }
-                        if let Some(action) = axis_binding.get(axis.0) {
-                            im.action_value.bind(action.clone(), 0.);
-                        }
-                    }
-                    _ => clear(im, axis),
+                    ö if ö > 0. => set_val(im, axis, (ref_val, 0.)),
+                    // idk if it makes any difference
+                    // Option 1:
+                    // ö if ö < 0. => set_val(im, axis, (0., ref_val.abs())),
+                    // Option 2:
+                    // Which one is better, idk... I don't think it will make any difference anyway.
+                    // If it does, pls. create an issue or make a PR.
+                    ö if ö < 0. => set_val(im, (axis.1, axis.0), (ref_val.abs(), 0.)),
+                    _ => set_val(im, axis, (0., 0.)),
                 }
             };
         for motion in analog_motion.iter() {
