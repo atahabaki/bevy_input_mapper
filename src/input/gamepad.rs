@@ -1,4 +1,7 @@
-use bevy::{input::gamepad::{GamepadAxisChangedEvent, GamepadButtonChangedEvent}, prelude::*};
+use bevy::{
+    input::gamepad::{GamepadAxisChangedEvent, GamepadButtonChangedEvent},
+    prelude::*,
+};
 
 use crate::{AutoBinder, InputMapper};
 
@@ -29,12 +32,15 @@ pub enum GamepadAxis {
     PositiveRightZ,
     /// Right Z button's negative values.
     NegativeRightZ,
+    /// Other
+    PositiveOtherAxis(u8),
+    NegativeOtherAxis(u8),
 }
 
 impl InputMapper {
     pub fn gamepad_button_press_system(
         mut im: ResMut<InputMapper>,
-        mut event: EventReader<GamepadButtonChangedEvent>
+        mut event: EventReader<GamepadButtonChangedEvent>,
     ) {
         let binding = im.gamepad_button_binding.clone();
         for button_press in event.iter() {
@@ -161,7 +167,31 @@ impl InputMapper {
                     ),
                 },
                 GamepadAxisType::RightZ => todo!(),
-                GamepadAxisType::Other(_) => todo!(),
+                GamepadAxisType::Other(v) => match motion.value {
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveOtherAxis(v)) {
+                            im.action_value.bind(action.clone(), motion.value);
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeOtherAxis(v)) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeOtherAxis(v)) {
+                            im.action_value.bind(action.clone(), motion.value.abs());
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveOtherAxis(v)) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    _ => clear(
+                        &mut im,
+                        (
+                            &GamepadAxis::PositiveOtherAxis(v),
+                            &GamepadAxis::NegativeOtherAxis(v),
+                        ),
+                    ),
+                },
             }
         }
     }
