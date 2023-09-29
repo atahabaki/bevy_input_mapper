@@ -47,6 +47,41 @@ pub struct InputMapper {
     pub gamepad_button_binding: HashMap<GamepadButtonType, String>,
 }
 
+impl InputMapper {
+    pub fn bind_keyboard_key_press(&mut self, key: KeyCode, action: impl ToString) -> &mut Self {
+        self.keyboard_binding.bind(key, action.to_string());
+        self
+    }
+    pub fn bind_mouse_axis_move(&mut self, axis: MouseAxis, action: impl ToString) -> &mut Self {
+        self.mouse_axis_binding.bind(axis, action.to_string());
+        self
+    }
+    pub fn bind_mouse_button_press(
+        &mut self,
+        button: MouseButton,
+        action: impl ToString,
+    ) -> &mut Self {
+        self.mouse_button_binding.bind(button, action.to_string());
+        self
+    }
+    pub fn bind_gamepad_axis_move(
+        &mut self,
+        axis: GamepadAxis,
+        action: impl ToString,
+    ) -> &mut Self {
+        self.gamepad_axis_binding.bind(axis, action.to_string());
+        self
+    }
+    pub fn bind_gamepad_button_press(
+        &mut self,
+        button: GamepadButtonType,
+        action: impl ToString,
+    ) -> &mut Self {
+        self.gamepad_button_binding.bind(button, action.to_string());
+        self
+    }
+}
+
 #[derive(Default)]
 pub struct InputMapperPlugin;
 
