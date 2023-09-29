@@ -12,7 +12,7 @@ pub struct InputActionContinuing(pub String, pub f32);
 pub struct InputActionFinished(pub String);
 
 impl InputMapper {
-    pub fn event_cycle(
+    pub(crate) fn event_cycle(
         mut im: ResMut<InputMapper>,
         mut action_active: EventWriter<InputActionActive>,
         mut action_started: EventWriter<InputActionStarted>,

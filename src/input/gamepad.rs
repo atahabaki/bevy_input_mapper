@@ -38,7 +38,7 @@ pub enum GamepadAxis {
 }
 
 impl InputMapper {
-    pub fn gamepad_button_press_system(
+    pub(crate) fn gamepad_button_press_system(
         mut im: ResMut<InputMapper>,
         mut event: EventReader<GamepadButtonChangedEvent>,
     ) {
@@ -50,7 +50,7 @@ impl InputMapper {
         }
     }
 
-    pub fn gamepad_axis_move_system(
+    pub(crate) fn gamepad_axis_move_system(
         mut im: ResMut<InputMapper>,
         mut analog_motion: EventReader<GamepadAxisChangedEvent>,
     ) {

@@ -27,7 +27,7 @@ pub enum MouseAxis {
 }
 
 impl InputMapper {
-    pub fn mouse_axis_move_system(
+    pub(crate) fn mouse_axis_move_system(
         mut im: ResMut<InputMapper>,
         mut mouse_motion: EventReader<MouseMotion>,
     ) {
@@ -87,7 +87,10 @@ impl InputMapper {
         }
     }
 
-    pub fn mouse_button_press_system(mut im: ResMut<InputMapper>, input: Res<Input<MouseButton>>) {
+    pub(crate) fn mouse_button_press_system(
+        mut im: ResMut<InputMapper>,
+        input: Res<Input<MouseButton>>,
+    ) {
         let im_iter = im.mouse_button_binding.clone();
         for (button, action) in im_iter.iter() {
             if input.pressed(*button) {

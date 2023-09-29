@@ -11,7 +11,7 @@ use input::{
 
 use crate::input::events::InputActionActive;
 
-pub trait AutoBinder<K, V>
+pub(crate) trait AutoBinder<K, V>
 where
     K: Eq + Hash,
 {
@@ -36,15 +36,15 @@ where
 
 #[derive(Default, Clone, Resource)]
 pub struct InputMapper {
-    pub action_value: HashMap<String, f32>,
-    pub previous_action_value: HashMap<String, f32>,
+    pub(crate) action_value: HashMap<String, f32>,
+    pub(crate) previous_action_value: HashMap<String, f32>,
 
-    pub keyboard_binding: HashMap<KeyCode, String>,
-    pub mouse_button_binding: HashMap<MouseButton, String>,
-    pub mouse_axis_binding: HashMap<MouseAxis, String>,
+    pub(crate) keyboard_binding: HashMap<KeyCode, String>,
+    pub(crate) mouse_button_binding: HashMap<MouseButton, String>,
+    pub(crate) mouse_axis_binding: HashMap<MouseAxis, String>,
 
-    pub gamepad_axis_binding: HashMap<GamepadAxis, String>,
-    pub gamepad_button_binding: HashMap<GamepadButtonType, String>,
+    pub(crate) gamepad_axis_binding: HashMap<GamepadAxis, String>,
+    pub(crate) gamepad_button_binding: HashMap<GamepadButtonType, String>,
 }
 
 impl InputMapper {
