@@ -115,7 +115,28 @@ impl InputMapper {
                         ),
                     ),
                 },
-                GamepadAxisType::LeftZ => todo!(),
+                GamepadAxisType::LeftZ => match motion.value {
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveLeftZ) {
+                            im.action_value.bind(action.clone(), motion.value);
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeLeftZ) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeLeftZ) {
+                            im.action_value.bind(action.clone(), motion.value.abs());
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveLeftZ) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    _ => clear(
+                        &mut im,
+                        (&GamepadAxis::PositiveLeftZ, &GamepadAxis::NegativeLeftZ),
+                    ),
+                },
                 GamepadAxisType::RightStickX => match motion.value {
                     ö if ö > 0. => {
                         if let Some(action) = axis_binding.get(&GamepadAxis::PositiveRightStickX) {
@@ -166,7 +187,28 @@ impl InputMapper {
                         ),
                     ),
                 },
-                GamepadAxisType::RightZ => todo!(),
+                GamepadAxisType::RightZ => match motion.value {
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveRightZ) {
+                            im.action_value.bind(action.clone(), motion.value);
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeRightZ) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    ö if ö > 0. => {
+                        if let Some(action) = axis_binding.get(&GamepadAxis::NegativeRightZ) {
+                            im.action_value.bind(action.clone(), motion.value.abs());
+                        }
+                        if let Some(action) = axis_binding.get(&GamepadAxis::PositiveRightZ) {
+                            im.action_value.bind(action.clone(), 0.);
+                        }
+                    }
+                    _ => clear(
+                        &mut im,
+                        (&GamepadAxis::PositiveRightZ, &GamepadAxis::NegativeRightZ),
+                    ),
+                },
                 GamepadAxisType::Other(v) => match motion.value {
                     ö if ö > 0. => {
                         if let Some(action) = axis_binding.get(&GamepadAxis::PositiveOtherAxis(v)) {
