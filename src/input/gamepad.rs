@@ -37,35 +37,46 @@ pub enum GamepadAxis {
     NegativeOtherAxis(u8),
 }
 
-impl InputMapper {
+impl<T> InputMapper<T>
+where
+    T: Copy + States,
+{
     pub(crate) fn gamepad_button_press_system(
-        mut im: ResMut<InputMapper>,
+        mut im: ResMut<InputMapper<T>>,
+        state: Res<State<T>>,
         mut event: EventReader<GamepadButtonChangedEvent>,
     ) {
         let binding = im.gamepad_button_binding.clone();
+        let current_state = *state.get();
         for button_press in event.iter() {
-            if let Some(action) = binding.get(&button_press.button_type) {
-                im.action_value.bind((*action).clone(), button_press.value);
+            if let Some(action) = binding.get(&(current_state, button_press.button_type)) {
+                im.action_value
+                    .bind((current_state, (*action).clone()), button_press.value);
             }
         }
     }
 
     pub(crate) fn gamepad_axis_move_system(
-        mut im: ResMut<InputMapper>,
+        mut im: ResMut<InputMapper<T>>,
+        state: Res<State<T>>,
         mut analog_motion: EventReader<GamepadAxisChangedEvent>,
     ) {
         let axis_binding = im.gamepad_axis_binding.clone();
-        let set_val =
-            |im: &mut ResMut<InputMapper>, axis: (&GamepadAxis, &GamepadAxis), val: (f32, f32)| {
-                if let Some(action) = axis_binding.get(axis.0) {
-                    im.action_value.bind((*action).clone(), val.0);
-                }
-                if let Some(action) = axis_binding.get(axis.1) {
-                    im.action_value.bind((*action).clone(), val.1);
-                }
-            };
+        let current_state = *state.get();
+        let set_val = |im: &mut ResMut<InputMapper<T>>,
+                       axis: (&GamepadAxis, &GamepadAxis),
+                       val: (f32, f32)| {
+            if let Some(action) = axis_binding.get(&(current_state, axis.0.clone())) {
+                im.action_value
+                    .bind((current_state, (*action).clone()), val.0);
+            }
+            if let Some(action) = axis_binding.get(&(current_state, axis.1.clone())) {
+                im.action_value
+                    .bind((current_state, (*action).clone()), val.1);
+            }
+        };
         let s_bind =
-            |im: &mut ResMut<InputMapper>, ref_val: f32, axis: (&GamepadAxis, &GamepadAxis)| {
+            |im: &mut ResMut<InputMapper<T>>, ref_val: f32, axis: (&GamepadAxis, &GamepadAxis)| {
                 match ref_val {
                     ö if ö > 0. => set_val(im, axis, (ref_val, 0.)),
                     // idk if it makes any difference
