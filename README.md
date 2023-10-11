@@ -20,7 +20,7 @@ Simplify Bevy game development with the user-friendly Bevy Input Mapper Plugin.
   - [x] Gamepad
   - [x] Keyboard
   - [x] Mouse
-- [ ] Multiple scenario profiles
+- [x] Multiple scenario profiles
 
 ## Installation & Usage
 
