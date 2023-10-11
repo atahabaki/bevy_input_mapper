@@ -104,6 +104,103 @@ where
             .bind((scenario, button), action.to_string());
         self
     }
+    pub fn list_all_actions(&self) -> Vec<String> {
+        let mut actions = vec![];
+        if !self.keyboard_binding.is_empty() {
+            for x in self.keyboard_binding.values() {
+                actions.push(x.to_owned());
+            }
+        }
+        if !self.mouse_button_binding.is_empty() {
+            for x in self.mouse_button_binding.values() {
+                actions.push(x.to_owned());
+            }
+        }
+        if !self.mouse_axis_binding.is_empty() {
+            for x in self.mouse_axis_binding.values() {
+                actions.push(x.to_owned());
+            }
+        }
+        if !self.gamepad_button_binding.is_empty() {
+            for x in self.gamepad_button_binding.values() {
+                actions.push(x.to_owned());
+            }
+        }
+        if !self.gamepad_axis_binding.is_empty() {
+            for x in self.gamepad_axis_binding.values() {
+                actions.push(x.to_owned());
+            }
+        }
+        actions
+    }
+    pub fn list_scenario_actions_keyboard_mouse(&self, scenario: T) -> Vec<String> {
+        let mut actions = vec![];
+        if !self.keyboard_binding.is_empty() {
+            for (sc, key) in self.keyboard_binding.keys() {
+                if sc == &scenario {
+                    actions.push(
+                        self.keyboard_binding
+                            .get(&(sc.clone(), key.clone()))
+                            .unwrap()
+                            .to_owned(),
+                    );
+                }
+            }
+        }
+        if !self.mouse_button_binding.is_empty() {
+            for (sc, key) in self.mouse_button_binding.keys() {
+                if sc == &scenario {
+                    actions.push(
+                        self.mouse_button_binding
+                            .get(&(sc.clone(), key.clone()))
+                            .unwrap()
+                            .to_owned(),
+                    );
+                }
+            }
+        }
+        if !self.mouse_axis_binding.is_empty() {
+            for (sc, key) in self.mouse_axis_binding.keys() {
+                if sc == &scenario {
+                    actions.push(
+                        self.mouse_axis_binding
+                            .get(&(sc.clone(), key.clone()))
+                            .unwrap()
+                            .to_owned(),
+                    );
+                }
+            }
+        }
+        actions
+    }
+    fn list_scenario_actions_gamepad(&self, scenario: T) -> Vec<String> {
+        let mut actions = vec![];
+        if !self.gamepad_button_binding.is_empty() {
+            for (sc, key) in self.gamepad_button_binding.keys() {
+                if sc == &scenario {
+                    actions.push(
+                        self.gamepad_button_binding
+                            .get(&(sc.clone(), key.clone()))
+                            .unwrap()
+                            .to_owned(),
+                    );
+                }
+            }
+        }
+        if !self.gamepad_axis_binding.is_empty() {
+            for (sc, key) in self.gamepad_axis_binding.keys() {
+                if sc == &scenario {
+                    actions.push(
+                        self.gamepad_axis_binding
+                            .get(&(sc.clone(), key.clone()))
+                            .unwrap()
+                            .to_owned(),
+                    );
+                }
+            }
+        }
+        actions
+    }
 }
 
 #[derive(Default)]
