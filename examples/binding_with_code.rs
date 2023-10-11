@@ -4,21 +4,47 @@ use bevy_input_mapper::{
     InputMapper, InputMapperPlugin,
 };
 
-fn bind_keys(mut im: ResMut<InputMapper>) {
-    im.bind_keyboard_key_press(KeyCode::Space, "jump")
-        .bind_gamepad_button_press(GamepadButtonType::South, "jump")
-        .bind_mouse_axis_move(MouseAxis::PositiveX, "look_right")
-        .bind_mouse_axis_move(MouseAxis::NegativeX, "look_left")
-        .bind_mouse_axis_move(MouseAxis::PositiveY, "look_down")
-        .bind_mouse_axis_move(MouseAxis::NegativeY, "look_up")
-        .bind_gamepad_axis_move(GamepadAxis::PositiveRightStickX, "look_right")
-        .bind_gamepad_axis_move(GamepadAxis::NegativeRightStickX, "look_left")
-        .bind_gamepad_axis_move(GamepadAxis::NegativeRightStickY, "look_down")
-        .bind_gamepad_axis_move(GamepadAxis::PositiveRightStickY, "look_up")
-        .bind_mouse_button_press(MouseButton::Right, "scope")
-        .bind_gamepad_button_press(GamepadButtonType::LeftTrigger, "scope")
-        .bind_mouse_button_press(MouseButton::Left, "fire")
-        .bind_gamepad_button_press(GamepadButtonType::RightTrigger2, "fire");
+/// Here, we define a State for Scenario.
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum GameState {
+    #[default]
+    Default,
+    Swimming,
+}
+
+/// We bind Input with specific scenario to an action.
+fn bind_keys(mut im: ResMut<InputMapper<GameState>>) {
+    // On default Scenario, pressing Space or Gamepad South triggers jump action.
+    im.bind_keyboard_key_press(GameState::Default, KeyCode::Space, "jump")
+        .bind_gamepad_button_press(GameState::Default, GamepadButtonType::South, "jump")
+        // On swimming Scenario/State, pressing Space or Gamepad South triggers swim_up action.
+        .bind_keyboard_key_press(GameState::Swimming, KeyCode::Space, "swim_up")
+        .bind_gamepad_button_press(GameState::Swimming, GamepadButtonType::South, "swim_up")
+        // Here we bind gamepad's right stick and mouse movements to camera.
+        .bind_gamepad_axis_move(
+            GameState::Default,
+            GamepadAxis::NegativeRightStickX,
+            "look_left",
+        )
+        .bind_gamepad_axis_move(
+            GameState::Default,
+            GamepadAxis::PositiveRightStickX,
+            "look_right",
+        )
+        .bind_gamepad_axis_move(
+            GameState::Default,
+            GamepadAxis::NegativeRightStickY,
+            "look_down",
+        )
+        .bind_gamepad_axis_move(
+            GameState::Default,
+            GamepadAxis::PositiveRightStickY,
+            "look_up",
+        )
+        .bind_mouse_axis_move(GameState::Default, MouseAxis::NegativeX, "look_left")
+        .bind_mouse_axis_move(GameState::Default, MouseAxis::PositiveX, "look_right")
+        .bind_mouse_axis_move(GameState::Default, MouseAxis::PositiveY, "look_down")
+        .bind_mouse_axis_move(GameState::Default, MouseAxis::NegativeY, "look_up");
 }
 
 fn logger(
@@ -44,7 +70,8 @@ fn logger(
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(InputMapperPlugin)
+        .add_state::<GameState>()
+        .add_plugins(InputMapperPlugin::<GameState>::new())
         .add_systems(Startup, bind_keys)
         .add_systems(Update, logger)
         .run()
