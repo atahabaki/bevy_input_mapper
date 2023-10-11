@@ -14,3 +14,6 @@ bind_macro = []
 
 [dependencies]
 bevy = "0.11.2"
+
+[dev-dependencies]
+bevy_egui = "0.22.0"
